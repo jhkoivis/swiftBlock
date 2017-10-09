@@ -53,21 +53,21 @@ class SwiftBlockPanel(bpy.types.Panel):
             split = box.split(percentage=0.5)
             split.operator("build.blocking", text="Build Blocking")
             split.prop(ob, "useNumba")
-
+				
             split = box.split()
             split.operator("preview.mesh", text="Preview mesh")
             split = split.split()
             split.operator("write.mesh", text="Write mesh")
             box.template_list("block_items", "", ob, "blocks", ob, "block_index", rows=2)
             box.operator("get.block")
-
+			
             box = self.layout.box()
             box.label("Edge mapping")
             # box.prop(ob, "MappingType")
             split = box.split()
             split.prop(ob, "Cells")
             # split.operator('set.cellsize')
-            if ob.Mesher == "blockMeshMG":
+            if ob.Mesher == "blockMeshMG" or ob.Mesher == 'noBlockMeshOnlyDict':
                 split = box.split()
                 col = split.column()
                 col.label("Start")
@@ -130,9 +130,9 @@ def initSwiftBlockProperties():
     bpy.types.Object.direction_object = bpy.props.StringProperty(default="")
     bpy.types.Object.isdirectionObject = bpy.props.BoolProperty(default=False)
 
-    bpy.types.Object.Mesher = bpy.props.EnumProperty(name="",
-            items = (("blockMeshMG","blockMeshMG","",1),
-                     ("blockMeshBodyFit","blockMeshBodyFit","",2),),update=changeMesher)
+    bpy.types.Object.Mesher = bpy.props.EnumProperty(name	= "", items 	= (	("blockMeshMG",			"blockMeshMG",			"", 1),
+					("blockMeshBodyFit",	"blockMeshBodyFit",		"", 2),
+					('noBlockMeshOnlyDict',	'noBlockMeshOnlyDict',	'', 3)), update	= changeMesher)
 
 
 # Blocking properties
@@ -602,8 +602,33 @@ def writeMesh(ob, folder = ''):
             mesh = blockMeshBodyFit.PreviewMesh()
         writeProjectionObjects(ob, mesh.triSurfacePath, onlyFaces = True)
         cells = mesh.writeBlockMeshDict(verts, 1, boundaries, polyLines, edgeInfo, block_names, blocks, block_edges, projections, ob.SearchLength)
+################################################################
+    elif ob.Mesher == 'noBlockMeshOnlyDict':
+        from . import noBlockMeshOnlyDict
+        importlib.reload(noBlockMeshOnlyDict)
+        if folder:
+            mesh = noBlockMeshOnlyDict.PreviewMesh(folder)
+        else:
+            mesh = noBlockMeshOnlyDict.PreviewMesh()
+        # projection_tris = writeProjectionObjects(project_verts,project_edges,project_faces, mesh.geomPath)
+        if ob.projections:
+            geos = writeProjectionObjects(ob, mesh.geomPath)
+            projections['geo'] = geos
+
+        cells = mesh.writeBlockMeshDict(verts, 1, boundaries, polyLines, edgeInfo, block_names, blocks, block_edges, projections)
+	#################################################################	
+    
     bpy.ops.wm.context_set_value(data_path="tool_settings.mesh_select_mode", value="(False,True,False)")
+	
     return mesh, cells
+	
+	
+	
+
+	
+	
+	
+	
 
 class PreviewMesh(bpy.types.Operator):
     bl_idname = "preview.mesh"
@@ -651,6 +676,42 @@ class WriteMesh(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='EDIT')
         self.report({'INFO'}, "Cells in mesh: " + str(cells))
         return {"FINISHED"}
+		
+		
+class WriteBMD(bpy.types.Operator):
+    bl_idname = "writebmd.mesh"
+    bl_label = "Write Block Mesh Dict"
+
+    filepath = bpy.props.StringProperty(subtype='DIR_PATH')
+    # filepath = bpy.props.StringProperty(
+            # name="File Path",
+            # description="Filepath used for exporting the file",
+            # maxlen=1024,
+            # subtype='FILE_PATH',
+            # default='/opt',
+            # )
+    check_existing = bpy.props.BoolProperty(
+            name="Check Existing",
+            description="Check and warn on overwriting existing files",
+            default=True,
+            options={'HIDDEN'},
+            )
+
+    # use_filter_folder = True
+
+    def invoke(self, context, event):
+        bpy.context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        ob = context.active_object
+        mesh, cells = writeBMD(ob, self.filepath)
+        bpy.ops.object.mode_set(mode='EDIT')
+        self.report({'INFO'}, "Cells in mesh: " + str(cells))
+        return {"FINISHED"}
+		
+		
+		
 
 class ActivateBlocking(bpy.types.Operator):
     bl_idname = "activate.blocking"
@@ -1339,8 +1400,11 @@ def changeMesher(self, context):
     ob = context.active_object
     if ob.Mesher == "blockMeshMG":
         ob.MappingType = "Geometric MG"
+    elif ob.Mesher == "noBlockMeshOnlyDict":
+        ob.MappingType == "Geometric MG"
     elif ob.Mesher == "blockMeshBodyFit":
         ob.MappingType = "Geometric"
+		
 
 class DrawEdgeDirections(bpy.types.Operator):
     "Draw edge directions"
