@@ -31,4 +31,28 @@ git clone https://github.com/flowkersma/swiftBlock/
 ```
 Replace 2.xx with your Blender version. Load your OpenFOAM environment and launch Blender. In Blender open the preferences (File->User Preferences). Click on addons tab, search for SwiftBlock and enable it. 
 
+## How to install in Windows (10) and use with Blender (2.79) without OpenFOAM 
+
+Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD-case online or save your CFD-case to e.g. github.
+
+* Install Blender 2.79 https://www.blender.org/download/
+* goto Blender addons installation directory in powershell or console (default is below):
+	* cd "C:\Program Files\Blender Foundation\Blender\2.79\scripts\addons"
+* clone with git (install it first)
+	* git clone https://github.com/jhkoivis/swiftBlock/ 
+* Install pip for Blender 
+	* download get-pip.py from https://bootstrap.pypa.io
+	* cd "C:\Program Files\Blender Foundation\Blender\2.79\python/bin"
+	* ./python.exe ~/Downloads/get-pip.py
+* Install new numpy 1.13 or higher
+	* cd "C:\Program Files\Blender Foundation\Blender\2.79\python/Scripts"
+	* ./pip.exe install numpy
+* Activate swiftBlock addon from Blender
+* Use noBlockMeshOnlyDict mode (3. option from first dropdown menu) and create only BlockMeshDict files
+* run blockMesh on your cluster and check the result on paraview (again windows)
+
+	
+```
+
+
 Happy meshing!
