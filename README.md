@@ -31,7 +31,7 @@ git clone https://github.com/flowkersma/swiftBlock/
 ```
 Replace 2.xx with your Blender version. Load your OpenFOAM environment and launch Blender. In Blender open the preferences (File->User Preferences). Click on addons tab, search for SwiftBlock and enable it. 
 
-## How to install in Windows (10) and use with Blender (2.79) without OpenFOAM 
+## How to install in Windows (10, 64bit) and use with Blender (2.79) without OpenFOAM 
 
 Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD-case online or save your CFD-case to e.g. github.
 
