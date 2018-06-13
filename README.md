@@ -33,12 +33,12 @@ Replace 2.xx with your Blender version. Load your OpenFOAM environment and launc
 
 ## How to install in Windows (10, 64bit) and use with Blender (2.79) without OpenFOAM 
 
-Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD-case online or save your CFD-case to e.g. github.
+Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD-case online (e.g. samba share) or save your CFD-case to e.g. github (server and client then do git push and pull).
 
 * Install Blender 2.79 https://www.blender.org/download/
 * goto Blender addons installation directory in powershell or console (default is below):
 	* cd "C:\Program Files\Blender Foundation\Blender\2.79\scripts\addons"
-* clone with git (install it first)
+* clone with git (install git first)
 	* git clone https://github.com/jhkoivis/swiftBlock/ 
 * Install pip for Blender 
 	* download get-pip.py from https://bootstrap.pypa.io
@@ -49,8 +49,18 @@ Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD
 	* ./pip.exe install numpy
 * Activate swiftBlock addon from Blender
 * Use noBlockMeshOnlyDict mode (3. option from first dropdown menu) and create only BlockMeshDict files
-* run blockMesh on your cluster and check the result on paraview (again windows)
+* run blockMesh on your computation cluster and check the result on Paraview (Paraview runs much better in windows due directx etc)
 
+## Caveats
+
+* Do multiple iterations of:
+	* 1. edits in blender (add tiny bits and layers)
+	* 2. save new .blend file
+	* 3. Swiftblock (DO NOT SAVE)
+	* 4. run blockMesh
+	* 5. check the points file with paraview (open .foam file in CFD folder)
+	* 6. reopen .blend file and goto 1
+* when extruding in blender use "EXTRUDE BLOCKS". Do not use normal "extrude" (hotkey e), it corrupts the internal mesh.
 	
 ```
 
