@@ -61,10 +61,13 @@ Windows version creates only a blockMeshDict file. Tip: share your cluster's CFD
 	* 5. check the points file with paraview (open .foam file in CFD folder)
 	* 6. reopen .blend file and goto a (last known working condition)
 * when extruding in blender use "EXTRUDE BLOCKS". Do not use normal "extrude" (hotkey e), it corrupts the internal mesh.
-* use "edit mode" in blender
-* view as "surface" in bleder (not wireframe)
-* select mesh as "faces" i.e. when selecting select as face (**not** as vertice or edge)
+* while using swiftblock
+	* use "edit mode" in blender
+	* view as "surface" in bleder (not wireframe)
+	* select mesh as "faces" i.e. when selecting select as face (**not** as vertice or edge)
 * if your selections (yellow lines and surfaces) starts to look weird (as not all edges corresponding to a face are highlighted) you most likely run into trouble with block mesh. Solution: go back to previous .blend version and do a smaller increment. At the lowest level you always select a square and extrude block, one by one, making sure that your extractusions obey the rules of OpenFoam.  
+* When extruding blocks, use edge view and edge select (not vertices nor faces). This way you can be sure that you are extruding internal edges also (if any).
+
 
 	
 ```
